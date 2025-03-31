@@ -71,20 +71,14 @@ npm start
 
 ## Usage
 1. Image Upload Method: Users can upload a clear facial image for analysis. The AI model will classify the skin type and display results.
-
 2. Questionnaire Method: Users can answer a set of questions about their skin's characteristics. Based on their responses, the app will classify the skin type.
-
 3. Recommendations: After determining the skin type, the app provides a set of skincare recommendations tailored to the user.
 
 ## Contributing
 If you would like to contribute to this project, follow these steps:
-
 1. Fork the repository.
-
 2. Create a new branch (git checkout -b feature-branch).
-
 3. Make your changes.
-
 4. Commit your changes (git commit -am 'Add new feature').
 
 5. Push to the branch (git push origin feature-branch).
