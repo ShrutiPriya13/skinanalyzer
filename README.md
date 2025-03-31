@@ -91,5 +91,6 @@ If you would like to contribute to this project, follow these steps:
 
 6. Create a pull request.
 
-License
+## License
 This project is licensed under the MIT License - see the LICENSE file for details
+[MIT](LICENSE)
