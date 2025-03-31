@@ -20,11 +20,74 @@ Once the skin type is detected, the app offers customized skincare tips and prod
 
 ## Technologies Used
 - Frontend: HTML, CSS, JavaScript, React
-
 - Backend: Node.js, Express
-
 - Machine Learning: Python, TensorFlow, Keras (for skin type detection)
-
 - Database: MongoDB (for storing user preferences and recommendations)
-
 - Deployment: vercel
+
+
+## Installation
+1. Clone the Repository
+```bash
+git clone https://github.com/your-username/skin-type-detection-and-recommendation.git
+cd skin-type-detection-and-recommendation
+```
+
+2. Set Up the Backend
+- Navigate to the backend folder:
+```bash
+cd backend
+```
+
+- Install the dependencies:
+```bash
+npm install
+```
+
+- Set up environment variables, such as the database URL, in a .env file (refer to .env.example for guidance).
+
+- Start the server:
+```bash
+npm start
+```
+
+3. Set Up the Frontend
+- Navigate to the frontend folder:
+```bash
+cd frontend
+```
+
+- Install the dependencies:
+```bash
+npm install
+```
+
+- Start the frontend:
+```bash
+npm start
+```
+
+## Usage
+1. Image Upload Method: Users can upload a clear facial image for analysis. The AI model will classify the skin type and display results.
+
+2. Questionnaire Method: Users can answer a set of questions about their skin's characteristics. Based on their responses, the app will classify the skin type.
+
+3. Recommendations: After determining the skin type, the app provides a set of skincare recommendations tailored to the user.
+
+## Contributing
+If you would like to contribute to this project, follow these steps:
+
+1. Fork the repository.
+
+2. Create a new branch (git checkout -b feature-branch).
+
+3. Make your changes.
+
+4. Commit your changes (git commit -am 'Add new feature').
+
+5. Push to the branch (git push origin feature-branch).
+
+6. Create a pull request.
+
+License
+This project is licensed under the MIT License - see the LICENSE file for details
