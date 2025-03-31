@@ -25,8 +25,12 @@ Once the skin type is detected, the app offers customized skincare tips and prod
 - Database: MongoDB (for storing user preferences and recommendations)
 - Deployment: vercel
 
+## Getting started
 
-## Installation
+### Environment configuration
+Create a .env file in the root directory and add necessary variables like DATABASE_URL, PORT, and SECRET_KEY.
+
+### Installation
 1. Clone the Repository
 ```bash
 git clone https://github.com/your-username/skin-type-detection-and-recommendation.git
@@ -43,8 +47,6 @@ cd backend
 ```bash
 npm install
 ```
-
-- Set up environment variables, such as the database URL, in a .env file (refer to .env.example for guidance).
 
 - Start the server:
 ```bash
