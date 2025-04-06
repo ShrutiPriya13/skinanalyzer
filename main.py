@@ -23,7 +23,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],  # Allow all HTTP methods
     allow_headers=["*"],  # Allow all headers
-)
+) 
 
 class QuestionnaireInput(BaseModel):
     skin_feel: int

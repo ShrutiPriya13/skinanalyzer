@@ -1,0 +1,65 @@
+body{
+    background:url('./images/background.jpg');
+    background-size: cover; /* Make sure it covers the entire screen */
+    background-position: center; /* Center the image */
+    background-attachment: fixed; 
+    color:#29100f;
+}
+.login-container {
+    text-align: center;
+    padding: 50px;
+    margin-top: 7.5rem;
+    
+}
+.login-container h1{
+    font-family:"Gravitas One", serif;
+    font-weight: 400;
+    font-size:2.5rem;
+}
+.login-container p{
+    font-size: larger;
+    margin-top:-1rem;
+    color:#29100f;
+}
+
+.login-btn {
+    background-color: #e387a9;
+    color: white;
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+#user-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+#user-menu {
+    position: absolute;
+    top: 50px;
+    right: 10px;
+    background: white;
+    padding: 10px;
+    border: 1px solid #ddd;
+    display: none;
+}
+
+#logout-btn {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#logout-btn:hover {
+    background-color: #cc0000;
+}
+

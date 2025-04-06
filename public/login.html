@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gravitas+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+    <div class="login-container">
+        <h1 id="welcome-text">Welcome to <span class="highlight">Skin Analyzer</span></h1>
+        <p>Please log in to continue</p>
+        <a href="http://localhost:5500/auth/google" class="login-btn">Login with Google</a>
+    </div>
+    <script>
+       document.addEventListener("DOMContentLoaded", function() {
+    let welcomeText = document.getElementById("welcome-text");
+
+    // Extract the "Welcome to" part separately from "Skinalyzer"
+    let textBefore = "Welcome to";
+    let highlightWord = "Skin Analyzer";
+
+    // Wrap each letter of "Welcome to" in a <span>
+    let animatedText = textBefore.split("").map(letter => {
+        return `<span class="letter">${letter}</span>`;
+    }).join("");
+
+    // Reconstruct the innerHTML correctly
+    welcomeText.innerHTML = `${animatedText} <span class="highlight">${highlightWord}</span>`;
+
+    // GSAP animation for each letter
+    gsap.set(".letter", { opacity: 0, y: -50 });
+    gsap.to(".letter", {
+        opacity: 1,
+        y: 0,
+        duration: 1.2,
+        ease: "bounce.out",
+        stagger: 0.05
+    });
+
+    // Glowing effect for 'Skinalyzer'
+    gsap.to(".highlight", { 
+        color:"#e387a9",
+        textShadow: "0px 0px 10px rgba(244,151,142, 0.8)",
+        repeat: -1, 
+        yoyo: true, 
+        duration: 2, 
+        ease: "sine.inOut"
+    });
+});
+
+    </script>
+</body>
+</html>
