@@ -85,6 +85,37 @@ If you would like to contribute to this project, follow these steps:
 
 6. Create a pull request.
 
+## Deployment Instructions
+
+### Deploying to Render
+
+1. Create a new web service on Render:
+   - Go to [Render Dashboard](https://dashboard.render.com)
+   - Click "New +" and select "Web Service"
+   - Choose "GitHub" as your repository source
+   - Connect your GitHub repository
+   - Select the branch you want to deploy (usually `main` or `master`)
+
+2. Configure Build Settings:
+   - Build Command: `npm install`
+   - Start Command: `node server.js`
+
+3. Set Environment Variables:
+   - `MODEL_URL`: Your Google Drive model URL
+   - `MONGO_URI`: Your MongoDB connection string
+   - `GOOGLE_CLIENT_ID`: Your Google OAuth client ID
+   - `GOOGLE_CLIENT_SECRET`: Your Google OAuth client secret
+   - `SESSION_SECRET`: Your session secret
+   - `FRONTEND_URL`: URL of your frontend application
+   - `GOOGLE_CALLBACK_URL`: Your callback URL for Google OAuth
+
+4. Wait for deployment to complete. Once deployed, you'll get a URL like `https://your-app.onrender.com`
+
+5. Update Google OAuth settings:
+   - Go to Google Cloud Console
+   - Find your OAuth 2.0 Client ID
+   - Add the callback URL: `https://your-app.onrender.com/auth/google/callback`
+
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details
 [MIT](LICENSE)

@@ -12,7 +12,12 @@ const app = express();
 const PORT = process.env.PORT || 5500;
 
 app.use(express.json());
-app.use(cors({ origin: "http://127.0.0.1:5500", credentials: true }));
+const corsOptions = {
+    origin: process.env.FRONTEND_URL || "http://127.0.0.1:5500",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"]
+};
+app.use(cors(corsOptions));
 
 // Serve static files (HTML, CSS, images)
 app.use(express.static(path.join(__dirname, "public")));
@@ -37,7 +42,7 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:5500/auth/google/callback"
+    callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:5500/auth/google/callback"
 }, async (accessToken, refreshToken, profile, done) => {
     let user = await User.findOne({ googleId: profile.id });
     if (!user) {
