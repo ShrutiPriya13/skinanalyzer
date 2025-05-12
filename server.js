@@ -12,6 +12,11 @@ const app = express();
 const PORT = process.env.PORT || 5500;
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// File upload middleware
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 const corsOptions = {
     origin: process.env.FRONTEND_URL,
     credentials: true,
@@ -98,7 +103,15 @@ const predict = require("./predict");
 const recommend = require("./recommend");
 
 // API Routes
-app.post("/api/predict", predict.predictImage);
+app.post("/api/predict", upload.single('file'), predict.predictImage);
+app.post("/api/predict_questionnaire", predict.predictQuestionnaire);
+app.get("/api/recommend/:skinType", recommend.getRecommendations);
+
+// Handle errors
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ error: 'Something went wrong!' });
+});
 app.post("/api/predict_questionnaire", predict.predictQuestionnaire);
 app.get("/api/recommend/:skinType", recommend.getRecommendations);
 

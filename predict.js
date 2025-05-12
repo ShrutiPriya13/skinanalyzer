@@ -2,6 +2,7 @@ const tf = require('@tensorflow/tfjs-node');
 const fs = require('fs');
 const path = require('path');
 const { google } = require('googleapis');
+const sharp = require('sharp');
 
 // Load model from Google Drive
 async function loadModel() {
@@ -43,19 +44,34 @@ loadModel().then(m => {
 // Image prediction
 async function predictImage(req, res) {
     try {
-        const file = req.files.file;
-        const image = tf.node.decodeImage(file.data);
-        
-        // Preprocess image
-        const resized = tf.image.resizeBilinear(image, [224, 224]);
-        const normalized = resized.div(255);
+        const file = req.file;
+        if (!file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+
+        // Process the image
+        const processedImage = await sharp(file.path)
+            .resize(224, 224)
+            .toFormat('jpeg')
+            .toBuffer();
+
+        // Convert to tensor
+        const tensor = tf.node.decodeImage(processedImage);
+        const normalized = tensor.div(255);
         const batched = normalized.expandDims(0);
 
         // Make prediction
         const prediction = await model.predict(batched);
         const predictedClass = prediction.argMax(1).dataSync()[0];
         const skinTypes = ['Dry Skin', 'Oily Skin', 'Normal Skin', 'Combination Skin'];
-        
+
+        // Clean up
+        fs.unlinkSync(file.path);
+        tensor.dispose();
+        normalized.dispose();
+        batched.dispose();
+        prediction.dispose();
+
         res.json({
             skin_type: skinTypes[predictedClass],
             confidence: prediction.dataSync()[predictedClass]
