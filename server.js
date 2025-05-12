@@ -94,5 +94,13 @@ app.get("/user", (req, res) => {
     }
 });
 
+const predict = require("./predict");
+const recommend = require("./recommend");
+
+// API Routes
+app.post("/api/predict", predict.predictImage);
+app.post("/api/predict_questionnaire", predict.predictQuestionnaire);
+app.get("/api/recommend/:skinType", recommend.getRecommendations);
+
 // Start Server
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
