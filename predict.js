@@ -64,6 +64,7 @@ async function predictImage(req, res) {
         const prediction = await model.predict(batched);
         const predictedClass = prediction.argMax(1).dataSync()[0];
         const skinTypes = ['Dry Skin', 'Oily Skin', 'Normal Skin', 'Combination Skin'];
+        const predictedType = skinTypes[predictedClass];
 
         // Clean up
         fs.unlinkSync(file.path);
@@ -72,9 +73,14 @@ async function predictImage(req, res) {
         batched.dispose();
         prediction.dispose();
 
+        // Return prediction and recommendations
         res.json({
-            skin_type: skinTypes[predictedClass],
-            confidence: prediction.dataSync()[predictedClass]
+            skin_type: predictedType,
+            confidence: prediction.dataSync()[predictedClass],
+            recommendations: {
+                skin_type: predictedType,
+                recommended_products: []
+            }
         });
     } catch (error) {
         console.error('Prediction error:', error);
@@ -83,7 +89,7 @@ async function predictImage(req, res) {
 }
 
 // Questionnaire prediction
-function predictQuestionnaire(req, res) {
+async function predictQuestionnaire(req, res) {
     try {
         const { skin_feel, breakout_frequency, tight_flaky, pores, sun_reaction } = req.body;
         const scores = {
@@ -114,6 +120,7 @@ function predictQuestionnaire(req, res) {
         const skinTypes = ['Dry Skin', 'Oily Skin', 'Normal Skin', 'Combination Skin'];
         const predictedType = skinTypes[scoresArray.indexOf(maxScore)];
 
+        // Return prediction and recommendations
         res.json({
             skin_type: predictedType,
             scores: {
@@ -121,6 +128,10 @@ function predictQuestionnaire(req, res) {
                 oily: oilyScore,
                 normal: normalScore,
                 combination: combinationScore
+            },
+            recommendations: {
+                skin_type: predictedType,
+                recommended_products: []
             }
         });
     } catch (error) {

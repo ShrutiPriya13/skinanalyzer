@@ -10,6 +10,43 @@ const User = require("./User"); // Moved inside models folder if applicable
 
 const app = express();
 const PORT = process.env.PORT || 5500;
+const { spawn } = require('child_process');
+
+// Initialize model and recommendations
+let modelLoaded = false;
+let recommendations = null;
+
+// Load model and recommendations
+function initializeSystem() {
+    return new Promise((resolve, reject) => {
+        // Start Python recommendation system
+        const pythonProcess = spawn('python', ['recommendations/recommend.py']);
+        
+        pythonProcess.stdout.on('data', (data) => {
+            console.log(`Python output: ${data}`);
+        });
+
+        pythonProcess.stderr.on('data', (data) => {
+            console.error(`Python error: ${data}`);
+        });
+
+        pythonProcess.on('close', (code) => {
+            if (code === 0) {
+                console.log('Recommendation system initialized successfully');
+                modelLoaded = true;
+                resolve();
+            } else {
+                console.error('Failed to initialize recommendation system');
+                reject(new Error('Failed to initialize recommendation system'));
+            }
+        });
+    });
+}
+
+// Initialize the system when server starts
+initializeSystem().catch(error => {
+    console.error('Error initializing system:', error);
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -103,9 +140,70 @@ const predict = require("./predict");
 const recommend = require("./recommend");
 
 // API Routes
-app.post("/api/predict", upload.single('file'), predict.predictImage);
-app.post("/api/predict_questionnaire", predict.predictQuestionnaire);
-app.get("/api/recommend/:skinType", recommend.getRecommendations);
+app.post("/api/predict", upload.single('file'), async (req, res) => {
+    try {
+        if (!modelLoaded) {
+            return res.status(503).json({ error: 'System not ready. Please try again later.' });
+        }
+        
+        const prediction = await predict.predictImage(req, res);
+        res.json(prediction);
+    } catch (error) {
+        console.error('Prediction error:', error);
+        res.status(500).json({ error: 'Failed to process image' });
+    }
+});
+
+app.post("/api/predict_questionnaire", async (req, res) => {
+    try {
+        if (!modelLoaded) {
+            return res.status(503).json({ error: 'System not ready. Please try again later.' });
+        }
+        
+        const prediction = await predict.predictQuestionnaire(req, res);
+        res.json(prediction);
+    } catch (error) {
+        console.error('Questionnaire error:', error);
+        res.status(500).json({ error: 'Failed to process questionnaire' });
+    }
+});
+
+app.get("/api/recommend/:skinType", async (req, res) => {
+    try {
+        if (!modelLoaded) {
+            return res.status(503).json({ error: 'System not ready. Please try again later.' });
+        }
+        
+        const skinType = req.params.skinType;
+        // Call Python script for recommendations
+        const pythonProcess = spawn('python', ['recommendations/recommend.py', skinType]);
+        
+        let output = '';
+        pythonProcess.stdout.on('data', (data) => {
+            output += data.toString();
+        });
+
+        pythonProcess.on('close', (code) => {
+            if (code === 0) {
+                try {
+                    const recommendations = JSON.parse(output);
+                    res.json({
+                        skin_type: skinType,
+                        recommended_products: recommendations
+                    });
+                } catch (e) {
+                    console.error('Failed to parse recommendations:', e);
+                    res.status(500).json({ error: 'Failed to fetch recommendations' });
+                }
+            } else {
+                res.status(500).json({ error: 'Failed to fetch recommendations' });
+            }
+        });
+    } catch (error) {
+        console.error('Recommendation error:', error);
+        res.status(500).json({ error: 'Failed to fetch recommendations' });
+    }
+});
 
 // Handle errors
 app.use((err, req, res, next) => {
