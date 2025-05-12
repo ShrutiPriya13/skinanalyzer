@@ -105,32 +105,38 @@
 
 
     <script>
+// Initialize API URL
 const API_BASE_URL = 'https://skinanalyzer-h6zv.onrender.com';
 
-// Update all URLs to use the correct API base
+// Update URLs immediately
 function updateURLs() {
-    // Update all fetch URLs
-    document.querySelectorAll('script').forEach(script => {
-        const text = script.textContent;
-        if (text.includes('http://127.0.0.1:5000') || text.includes('http://localhost:5500')) {
-            script.textContent = text
+    // Update all fetch URLs in script content
+    const scripts = document.getElementsByTagName('script');
+    Array.from(scripts).forEach(script => {
+        if (script.textContent) {
+            script.textContent = script.textContent
                 .replace(/http:\/\/127\.0\.0\.1:5000/g, API_BASE_URL)
                 .replace(/http:\/\/localhost:5500/g, API_BASE_URL);
         }
     });
-    
+
     // Update all hrefs
-    document.querySelectorAll('[href]').forEach(element => {
-        const href = element.getAttribute('href');
-        if (href.includes('http://127.0.0.1:5000') || href.includes('http://localhost:5500')) {
-            element.setAttribute('href', href
+    const links = document.querySelectorAll('a, link');
+    links.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href) {
+            const updatedHref = href
                 .replace('http://127.0.0.1:5000', API_BASE_URL)
-                .replace('http://localhost:5500', API_BASE_URL));
+                .replace('http://localhost:5500', API_BASE_URL);
+            link.setAttribute('href', updatedHref);
         }
     });
 }
 
-// Call update function when DOM is loaded
+// Update URLs immediately
+updateURLs();
+
+// Update URLs again when DOM is loaded (just in case)
 document.addEventListener('DOMContentLoaded', updateURLs);
        const images = ["images/product1.png", "images/product2.png", "images/product4.png","images/product5.png", "images/product6.png",  "images/product8.png", "images/product9.png"];
 let index = 0;
@@ -225,7 +231,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 let formData = new FormData();
                 formData.append("file", fileInput);
 
-                fetch(`${API_BASE_URL}/api/predict`, {
+                fetch(`${API_BASE_URL}/predict`, {
                     method: "POST",
                     body: formData
                 })
@@ -254,7 +260,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     sun_reaction: document.getElementById("sunReaction").value
                 };
 
-                fetch(`${API_BASE_URL}/api/predict_questionnaire`, {
+                fetch(`${API_BASE_URL}/predict_questionnaire`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(requestData)
