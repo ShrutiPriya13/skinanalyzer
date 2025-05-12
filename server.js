@@ -11,6 +11,49 @@ const User = require("./User"); // Moved inside models folder if applicable
 const app = express();
 const PORT = process.env.PORT || 5500;
 const { spawn } = require('child_process');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const session = require('express-session');
+
+// Configure session
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'your-secret-key',
+    resave: false,
+    saveUninitialized: false
+}));
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Configure Google OAuth
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.GOOGLE_CALLBACK_URL || '/auth/google/callback'
+},
+(accessToken, refreshToken, profile, done) => {
+    return done(null, profile);
+}));
+
+// Serialize and deserialize user
+passport.serializeUser((user, done) => {
+    done(null, user);
+});
+
+passport.deserializeUser((user, done) => {
+    done(null, user);
+});
+
+// Google auth routes
+app.get('/auth/google',
+    passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+app.get('/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    (req, res) => {
+        res.redirect('/model');
+    });
 
 // Initialize model and recommendations
 let modelLoaded = false;
@@ -50,6 +93,12 @@ initializeSystem().catch(error => {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Set security headers
+app.use((req, res, next) => {
+    res.setHeader('Content-Security-Policy', "default-src 'self'; font-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'");
+    next();
+});
 
 // File upload middleware
 const multer = require('multer');
@@ -138,6 +187,11 @@ app.get("/user", (req, res) => {
 
 const predict = require("./predict");
 const recommend = require("./recommend");
+
+// Authentication check
+app.get('/auth/check', (req, res) => {
+    res.json({ isAuthenticated: req.isAuthenticated(), user: req.user });
+});
 
 // API Routes
 app.post("/api/predict", upload.single('file'), async (req, res) => {

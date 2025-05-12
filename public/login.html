@@ -16,6 +16,22 @@
         <p>Please log in to continue</p>
         <a href="/auth/google" class="login-btn">Login with Google</a>
     </div>
+
+    <script>
+        // Handle login status
+        function updateLoginStatus() {
+            fetch('/auth/check')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.isAuthenticated) {
+                        window.location.href = '/model';
+                    }
+                });
+        }
+
+        // Check login status when page loads
+        document.addEventListener('DOMContentLoaded', updateLoginStatus);
+    </script>
     <script>
        document.addEventListener("DOMContentLoaded", function() {
     let welcomeText = document.getElementById("welcome-text");
