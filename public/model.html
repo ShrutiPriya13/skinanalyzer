@@ -221,62 +221,75 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         document.addEventListener("DOMContentLoaded", function () {
 
-            function predictImage() {
-                const fileInput = document.getElementById("imageUpload").files[0];
-                if (!fileInput) {
-                    alert("Please upload an image.");
-                    return;
-                }
+            async function predictImage() {
+                try {
+                    const fileInput = document.getElementById("imageUpload").files[0];
+                    if (!fileInput) {
+                        alert("Please upload an image.");
+                        return;
+                    }
 
-                let formData = new FormData();
-                formData.append("file", fileInput);
+                    const formData = new FormData();
+                    formData.append("file", fileInput);
 
-                fetch(`${API_BASE_URL}/predict`, {
-                    method: "POST",
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
+                    const response = await fetch(`${API_BASE_URL}/predict`, {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
                     console.log("Image Prediction Response:", data); // Debug API response
 
                     if (data.skin_type) {
                         document.getElementById("imageResult").innerText = `Predicted Skin Type: ${data.skin_type}`;
-                        showRecommendations(data.skin_type); // Ensure function is called
-                    } //else {
-                        //document.getElementById("imageResult").innerText = "Error: No skin type detected.";
-                    //}
-                    })
-                .catch(error => console.error("Error:", error));
+                        showRecommendations(data.skin_type);
+                    } else {
+                        document.getElementById("imageResult").innerText = "Error: No skin type detected.";
+                    }
+                } catch (error) {
+                    console.error("Prediction error:", error);
+                    document.getElementById("imageResult").innerText = "Error: Failed to process image.";
+                }
             }
 
 
+            async function predictQuestionnaire() {
+                try {
+                    const requestData = {
+                        skin_feel: document.getElementById("skinFeel").value,
+                        breakout_frequency: document.getElementById("breakoutFrequency").value,
+                        tight_flaky: document.getElementById("tightFlaky").value,
+                        pores: document.getElementById("pores").value,
+                        sun_reaction: document.getElementById("sunReaction").value
+                    };
 
-            function predictQuestionnaire() {
-                let requestData = {
-                    skin_feel: document.getElementById("skinFeel").value,
-                    breakout_frequency: document.getElementById("breakoutFrequency").value,
-                    tight_flaky: document.getElementById("tightFlaky").value,
-                    pores: document.getElementById("pores").value,
-                    sun_reaction: document.getElementById("sunReaction").value
-                };
+                    const response = await fetch(`${API_BASE_URL}/predict_questionnaire`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(requestData)
+                    });
 
-                fetch(`${API_BASE_URL}/predict_questionnaire`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(requestData)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log("Full Response:", data);  // Debugging step
-                    if (data.skin_type) {
-                        let skinType = data.skin_type;  // Define skinType inside this scope
-                        console.log("Predicted skin type:", skinType);
-                        showRecommendations(skinType);
-                    } else {
-                        console.error("Error: skin_type is missing in response");
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                })
-                .catch(error => console.error("Error:", error));
+
+                    const data = await response.json();
+                    console.log("Questionnaire Prediction Response:", data); // Debug API response
+
+                    if (data.skin_type) {
+                        document.getElementById("questionnaireResult").innerText = `Predicted Skin Type: ${data.skin_type}`;
+                        showRecommendations(data.skin_type);
+                    } else {
+                        document.getElementById("questionnaireResult").innerText = "Error: No skin type detected.";
+                    }
+                } catch (error) {
+                    console.error("Questionnaire error:", error);
+                    document.getElementById("questionnaireResult").innerText = "Error: Failed to process questionnaire.";
+                }
             }
 
             function showRecommendations(skinType) {
