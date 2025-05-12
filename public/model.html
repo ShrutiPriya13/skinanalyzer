@@ -106,6 +106,24 @@
 
     <script>
 const API_BASE_URL = 'https://skinanalyzer-h6zv.onrender.com';
+
+// Update all fetch URLs to use the correct API path
+function updateFetchURLs() {
+    // Update login URLs
+    document.querySelectorAll('a[href*="http://localhost:5500/"]').forEach(link => {
+        link.href = link.href.replace('http://localhost:5500/', `${API_BASE_URL}/`);
+    });
+    
+    // Update API endpoints
+    document.querySelectorAll('script').forEach(script => {
+        if (script.textContent.includes('http://127.0.0.1:5000')) {
+            script.textContent = script.textContent.replace('http://127.0.0.1:5000', API_BASE_URL);
+        }
+    });
+}
+
+// Call update function when DOM is loaded
+document.addEventListener('DOMContentLoaded', updateFetchURLs);
        const images = ["images/product1.png", "images/product2.png", "images/product4.png","images/product5.png", "images/product6.png",  "images/product8.png", "images/product9.png"];
 let index = 0;
 
