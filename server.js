@@ -8,12 +8,10 @@ const cors = require("cors");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("./User"); // Moved inside models folder if applicable
 
+const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 5500;
-const { spawn } = require('child_process');
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const session = require('express-session');
+const path = require('path');
 
 // Configure session
 app.use(session({
@@ -94,10 +92,16 @@ initializeSystem().catch(error => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Set security headers
-app.use((req, res, next) => {
-    res.setHeader('Content-Security-Policy', "default-src 'self'; font-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'");
-    next();
+// Serve static files
+app.use(express.static('public'));
+
+// Set up routes
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.get('/model', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'model.html'));
 });
 
 // File upload middleware
